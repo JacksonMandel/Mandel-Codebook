@@ -68,6 +68,15 @@ jointdata <- vdem2 %>%
   mutate(across(c(CPIScore, CPIScoreStdErr, 
                   SnPGloInsightsRating, EconIntelRating, WEFRating), 
                 ~ as.numeric(.x) / 100))
+#Function to make tables
+summarize_variable <- function(variable, caption) {
+  summary_stats <- summary(variable)
+  summary_df <- data.frame(
+    Statistic = names(summary_stats),
+    Value = round(as.numeric(summary_stats), 3)
+  )
+  kable(summary_df, caption = caption)
+}
 ```
 
 # Overview
@@ -80,6 +89,7 @@ jointdata <- vdem2 %>%
   
 ## V-Dem Data
   6 indicators (Polyarchy, LibDem, ParticipDem, EgalDem, FreeFairElect, EqualAccess) are derived from the V-Dem dataset.  The V-Dem data is in the form of ratings on a scale from 0 to 1, assessed by country experts.  In all of the variables used in this dataset, higher scores represent greater presence of a particular feature (free and fair elections, egalitarian democracy, etc.)
+  V-Dem typically uses five experts per country-year observation, out of a pool of around 4,000 total experts. They use a model to algorithmically estimate the reliability of each expert relative to other experts, as well as the extent to which their assessment differs from those of other experts.  These are then used to weight each expert's assessment relative to others in calculating final scores.
   
 ## Corruption Perceptions Index Data
   6 indicators (CPIScore, CPIScoreRank, CPIScoreStdErr, EconIntelRating, SnPGloInsightsRating, WEFRating) are derived from the Corruption Perceptions Index.  This index is maintained by Transparency International, and includes the overall CPI score - which is an average of corruption scores assigned by a group of major international organizations - as well as the original scores used to calculate that number.  Our dataset includes the CPI score, as well a selection of the original scores used to calculate it.
@@ -119,12 +129,7 @@ https://ilostat.ilo.org/topics/informality/.
 **Variable Type:** numeric  
 **Description:** V-Dem describes this variable as rating "To what extent is the ideal of electoral democracy in its fullest sense achieved?" as evaluated by country experts in the field.  Electoral democracy is defined as making rulers accountable to their citizens via electoral procedures. On a scale of 0 to 1.  
 ```{r Polyarchy, echo= FALSE}
-polyarchy <- summary(jointdata$Polyarchy)
-polyarchy_df <- data.frame(
-  Statistic = names(polyarchy),
-  Value = round(as.numeric(polyarchy), 3)
-)
-kable(polyarchy_df, caption = "Summary Statistics for Polyarchy")
+summarize_variable(jointdata$Polyarchy, "Summary Statistics for Polyarchy")
 ```
 
 ## Liberal Democracy
@@ -132,12 +137,7 @@ kable(polyarchy_df, caption = "Summary Statistics for Polyarchy")
 **Variable Type:** numeric  
 **Description:** V-Dem describes this variable as rating "To what extent is the ideal of liberal democracy achieved?" as evaluated by country experts in the field.  Liberal democracy is defined broadly as the protection of minority and individual rights against the tyranny of the majority. On a scale of 0 to 1.  
 ```{r LibDem, echo= FALSE}
-libdem <- summary(jointdata$LibDem)
-libdem_df <- data.frame(
-  Statistic = names(libdem),
-  Value = round(as.numeric(libdem), 3)
-)
-kable(libdem_df, caption = "Summary Statistics for Liberal Democracy")
+summarize_variable(jointdata$LibDem, "Summary Statistics for Liberal Democracy")
 ```
 
 ## Participatory Democracy
@@ -145,12 +145,7 @@ kable(libdem_df, caption = "Summary Statistics for Liberal Democracy")
 **Variable Type:** numeric  
 **Description:** V-Dem describes this variable as rating "To what extent is the ideal of participatory democracy achieved?" as evaluated by country experts in the field.  Participatory democracy consists of the active involvement of citizens in all aspects of the political process, electoral and non-electoral.  On a scale of 0 to 1.  
 ```{r Participdem, echo= FALSE}
-participdem <- summary(jointdata$ParticipDem)
-participdem_df <- data.frame(
-  Statistic = names(participdem),
-  Value = round(as.numeric(participdem), 3)
-)
-kable(participdem_df, caption = "Summary Statistics for Participatory Democracy")
+summarize_variable(jointdata$ParticipDem, "Summary Statistics for Participatory Democracy")
 ```
 
 ## Egalitarian Democracy
@@ -158,12 +153,7 @@ kable(participdem_df, caption = "Summary Statistics for Participatory Democracy"
 **Variable Type:** numeric  
 **Description:** V-Dem describes this variable as rating "To what extent is the ideal of egalitarian democracy achieved?" as evaluated by country experts in the field.  Egalitarian democracy consists of equal opportunity to exercise political rights and liberties across all social groups.  On a scale of 0 to 1.  
 ```{r Egalpdem, echo= FALSE}
-egaldem <- summary(jointdata$EgalDem)
-egaldem_df <- data.frame(
-  Statistic = names(egaldem),
-  Value = round(as.numeric(egaldem), 3)
-)
-kable(egaldem_df, caption = "Summary Statistics for Egalitarian Democracy")
+summarize_variable(jointdata$EgalDem, "Summary Statistics for Egalitarian Democracy")
 ```
 
 ## Free and Fair Elections
@@ -171,12 +161,7 @@ kable(egaldem_df, caption = "Summary Statistics for Egalitarian Democracy")
 **Variable Type:** numeric  
 **Description:** V-Dem describes this variable as rating what extent the most recent election in a country can be considered free and fair as evaluated by country experts in the field.  Free and fair elections are defined as those that relfect the will of the people with minimal interference beyond routine errors.  On a scale of 0 to 1.  
 ```{r Freefairelect, echo= FALSE}
-freefairelect <- summary(jointdata$FreeFairElect)
-freefairelect_df <- data.frame(
-  Statistic = names(freefairelect),
-  Value = round(as.numeric(freefairelect), 3)
-)
-kable(freefairelect_df, caption = "Summary Statistics for Free and Fair Elections")
+summarize_variable(jointdata$FreeFairElect, "Summary Statistics for Free and Fair Elections")
 ```
 
 ## Equal Access
@@ -184,12 +169,7 @@ kable(freefairelect_df, caption = "Summary Statistics for Free and Fair Election
 **Variable Type:** numeric  
 **Description:** V-Dem describes this variable as answering the question "How equal is access to power?" as evaluated by country experts in the field.  On a scale of 0 to 1.  
 ```{r equalaccess, echo= FALSE}
-equalaccess <- summary(jointdata$EqualAccess)
-equalaccess_df <- data.frame(
-  Statistic = names(equalaccess),
-  Value = round(as.numeric(equalaccess), 3)
-)
-kable(equalaccess_df, caption = "Summary Statistics for Equal Access")
+summarize_variable(jointdata$EqualAccess, "Summary Statistics for Equal Access")
 ```
 
 ## CPIScore
@@ -197,12 +177,7 @@ kable(equalaccess_df, caption = "Summary Statistics for Equal Access")
 **Variable Type:** numeric  
 **Description:** The CPI score is calculated by taking the average of a group of corruption index scores by major international publications and organizations. It is originally calculated on a 1 to 100 scale, but we have recalculated it on a 0 to 1 scale.  0 represents least corrupt, and 100 represents most corrupt.  For more information on the types of indices used to calculate the CPI score, see the other corruption rating variables (EconIntelRating, etc.)  
 ```{r CPIScore, echo= FALSE}
-cpiscore <- summary(jointdata$CPIScore)
-cpiscore_df <- data.frame(
-  Statistic = names(cpiscore),
-  Value = round(as.numeric(cpiscore), 3)
-)
-kable(cpiscore_df, caption = "Summary Statistics for CPI Score")
+summarize_variable(jointdata$CPIScore, "Summary Statistics for Corruption Perceptions Index Score")
 ```
 
 ## CPIRank
@@ -220,12 +195,7 @@ kable(cpiscore_df, caption = "Summary Statistics for CPI Score")
 **Variable Type:** numeric  
 **Description:** The Economist Intelligence Unit CPI rating is a corruption index put together by the Economist Intelligence Unit - a group run by the newspaper The Economist - which ranks countries based on the existence and virulence of various corrupt public sector practices, such as bribery, nepotism, and state capture.
 ```{r Econintelunit, echo= FALSE}
-econintelrating <- summary(jointdata$EconIntelRating)
-econintelrating_df <- data.frame(
-  Statistic = names(econintelrating),
-  Value = round(as.numeric(econintelrating), 3)
-)
-kable(econintelrating_df, caption = "Summary Statistics for Economist Intelligence Unit Corruption Ratings")
+summarize_variable(jointdata$EconIntelRating, "Summary Statistics for Economist Intelligence Unit Ratings")
 ```
 
 ## S & P Gloabl Insights Rating
@@ -233,12 +203,7 @@ kable(econintelrating_df, caption = "Summary Statistics for Economist Intelligen
 **Variable Type:** numeric  
 **Description:** The S & P Global Insights CPI rating is a corruption index put together by S & P Global Insights which ranks countries based on the existence and virulence of various corrupt public sector practices, such as bribery, nepotism, and state capture.
 ```{r snp, echo= FALSE}
-snp <- summary(jointdata$SnPGloInsightsRating)
-snp_df <- data.frame(
-  Statistic = names(snp),
-  Value = round(as.numeric(snp), 3)
-)
-kable(snp_df, caption = "Summary Statistics for S & P Global Insights Corruption Ratings")
+summarize_variable(jointdata$SnPGloInsightsRating, "Summary Statistics for S & P Global Insights Ratings")
 ```
 
 ## World Economic Forum Rating
@@ -246,12 +211,7 @@ kable(snp_df, caption = "Summary Statistics for S & P Global Insights Corruption
 **Variable Type:** numeric  
 **Description:** The World Economic Forum CPI rating is a corruption index put together by the World Economic Forum which ranks countries based on the existence and virulence of various corrupt public sector practices, such as bribery, nepotism, and state capture.
 ```{r wef, echo= FALSE}
-wef <- summary(jointdata$WEFRating)
-wef_df <- data.frame(
-  Statistic = names(wef),
-  Value = round(as.numeric(wef), 3)
-)
-kable(wef_df, caption = "Summary Statistics for World Economic Forum Corruption Ratings")
+summarize_variable(jointdata$WEFRating, "Summary Statistics for WEF Rating")
 ```
 
 ## Informal Labor Year
@@ -259,12 +219,7 @@ kable(wef_df, caption = "Summary Statistics for World Economic Forum Corruption 
 **Variable Type:** numeric  
 **Description:** This variable represents what year the data on informal unemployment was gathered in.
 ```{r ily, echo= FALSE}
-ily <- summary(jointdata$InfLabYear)
-ily_df <- data.frame(
-  Statistic = names(ily),
-  Value = round(as.numeric(ily), 3)
-)
-kable(ily_df, caption = "Year of Informal Labor Data Gathering Summary Statistics")
+summarize_variable(jointdata$InfLabYear, "Summary Statistics for Informal Labor Year")
 ```
 
 ## Total Informal Employment Rate
@@ -272,12 +227,7 @@ kable(ily_df, caption = "Year of Informal Labor Data Gathering Summary Statistic
 **Variable Type:** numeric  
 **Description:** This variable represents a country's total informal employment rate across all sexes, ages, and sectors.  The data was gathered by each country's statistical agency and reported to the International Labor Organization.
 ```{r tie, echo= FALSE}
-tie <- summary(jointdata$TotInfLab)
-tie_df <- data.frame(
-  Statistic = names(tie),
-  Value = round(as.numeric(tie), 3)
-)
-kable(tie_df, caption = "Total Informal Employment Summary Statistics")
+summarize_variable(jointdata$TotInfLab, "Summary Statistics for Total Informal Unemployment Rate")
 ```
 
 ## Male Informal Employment Rate
@@ -285,12 +235,7 @@ kable(tie_df, caption = "Total Informal Employment Summary Statistics")
 **Variable Type:** numeric  
 **Description:** This variable represents a country's informal employment rate among men across all ages and sectors.  The data was gathered by each country's statistical agency and reported to the International Labor Organization.
 ```{r mie, echo= FALSE}
-mie <- summary(jointdata$MaleInfLab)
-mie_df <- data.frame(
-  Statistic = names(mie),
-  Value = round(as.numeric(mie), 3)
-)
-kable(mie_df, caption = "Male Informal Employment Summary Statistics")
+summarize_variable(jointdata$MaleInfLab, "Summary Statistics for Male Informal Labor Employment Rates")
 ```
 
 ## Female Informal Employment Rate
@@ -298,12 +243,7 @@ kable(mie_df, caption = "Male Informal Employment Summary Statistics")
 **Variable Type:** numeric  
 **Description:** This variable represents a country's informal employment rate among women across all ages and sectors.  The data was gathered by each country's statistical agency and reported to the International Labor Organization.
 ```{r fie, echo= FALSE}
-fie <- summary(jointdata$MaleInfLab)
-fie_df <- data.frame(
-  Statistic = names(fie),
-  Value = round(as.numeric(fie), 3)
-)
-kable(fie_df, caption = "Female Informal Employment Summary Statistics")
+summarize_variable(jointdata$FemInfLab, "Summary Statistics for Female Informal Labor Employment Rates")
 ```
 
 
